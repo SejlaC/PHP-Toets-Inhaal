@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Game toevoegen</title>
 </head>
 <body>
+
 <form action="form.php" method="POST">
     <label>Titel:
         <input type="text" name="title" required>
