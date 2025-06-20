@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insert = "INSERT INTO games (title, genre, platform, release_year) VALUES (:title, :genre, :platform, :release_year)";
         $stmt = $pdo->prepare($insert);
         $stmt->bindParam(':title', $title);
-        $stmt->bindParam(:'genre', $genre);
+        $stmt->bindParam(':genre', $genre);
         $stmt->bindParam(':platform', $platform);
         $stmt->bindParam(':release_year', $release_year, PDO::PARAM_INT);
 
