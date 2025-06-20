@@ -7,7 +7,21 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //validatie en inputbeveiliging
-    $title = filter_input
+    $title = filter_input(INPUT_POST,'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $genre = filter_input(INPUT_POST, 'genre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $platform = filter_input(INPUT_POST,'platform', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $release_year = filter_input(INPUT_POST,'release_year', FILTER_VALIDATE_INT);
+
+    //hier controleer je of alle velden zijn ingevuld,
+    if ($title && $genre && $platform && $release_year) {
+        $insert = "INSERT INTO games (title, genre, platform, release_year) VALUES (:title, :genre, :platform, :release_year)";
+        $stmt = $pdo->prepare($insert);
+        $stmt->bindParam(':title', $title);
+        $stmt->bindParam(:'genre', $genre);
+        $stmt->bindParam(':platform', $platform);
+        $stmt->bindParam(':release_year', $release_year, PDO::PARAM_INT);
+
+    }
 }
 
 ?>
