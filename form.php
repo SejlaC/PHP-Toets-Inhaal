@@ -1,8 +1,9 @@
 <?php
 include 'database.php';
 
-//hier sla je de errors op
+//deze variabele wordt gebruikt om weer te geven of het toevoegen van de game is gelukt
 $error = '';
+$succes = '';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,6 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':platform', $platform);
         $stmt->bindParam(':release_year', $release_year, PDO::PARAM_INT);
 
+
+        if ($stmt->execute()) {
+            $succes = "Game is succesvol toegevoegd";
+        } else {
+            $error = "Toevoegen van de game is mislukt. Probeer opnieuw";
+        }
+    } else {
+        $error = "Je moet alles correct invullen";
     }
 }
 

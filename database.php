@@ -10,4 +10,4 @@ try {
 } catch (PDOException $e) {
     die('Verbinding mislukt: ' . $e->getMessage());
 }
-
+?>
