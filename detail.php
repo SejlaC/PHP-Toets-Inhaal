@@ -24,7 +24,29 @@ if (!$game) {
 
 //reviewformulier verwerken als het verstuurd is
 $reviewError = '';
-if()
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $reviewer = filter_input(INPUT_POST, 'reviewer', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $rating = filter_input(INPUT_POST, 'rating', FILTER_VALIDATE_INT);
+    $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    if ($reviewer && $rating && $comment) {
+        $stmt = $pdo->prepare("INSERT INTO reviews (game_id, reviewer_name, rating, comment) VALUES (:game_id, :reviewer, :rating, :comment)");
+        $stmt->bindParam(':game_id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':reviewer', $reviewer);
+        $stmt->bindParam(':rating', $rating, PDO::PARAM_INT);
+        $stmt->bindParam(':comment', $comment);
+
+        if ($stmt->execute()) {
+            //ik stuur nu door naar de detailpagina met een extra parameter 'review=succes' in de url, zodat ik straks een succesmelding kan tonen als een review is toegevoegd (ik heb het eerst met alleen 'id' gedaan
+            header("Location: detail.php?id=$id&review=succes");
+            exit;
+        } else {
+            $reviewError = 'Er is iets fout gegaan bij het toevoegen van de review.';
+        }
+    } else {
+        $reviewError = 'Vul alle velden in';
+    }
+}
 
 //hiermee worden alle reviews voor deze specifieke game opgehaald
 $stmt = $pdo->prepare('SELECT * FROM reviews WHERE game_id = :game_id');
@@ -43,6 +65,7 @@ $reviews = $stmt->fetchAll();
     <title>Detailpagina</title>
 </head>
 <body>
+<!-- met deze code laat ik de titel, het genre, het platform en het jaar van de geselecteerde game zien -->
 <h1><?php echo htmlspecialchars(($game['title'])); ?></h1>
 <p>Genre: <?php echo htmlspecialchars($game['genre']); ?></p>
 <p>Platform: <?php echo htmlspecialchars($game['platform']); ?></p>
@@ -63,6 +86,23 @@ $reviews = $stmt->fetchAll();
         </p>
     <?php endforeach; ?>
 <?php endif; ?>
+
+<h2>Review toevoegen</h2>
+<?php
+//als er een fout optreedt bij het toevoegen van een review, wordt de foutmelding hier getoond met de kleur rood
+if (!empty($reviewError)) {
+    echo "<p style='color:red;'>$reviewError</p>";
+}
+?>
+<form method="post" action="">
+    Naam: <input type="text" name="reviewer" required><br>
+    Beoordeling (1-5): <input type="number" name="rating" min="1" max="5" required><br>
+    Opmerking:<br>
+    <textarea name="comment" required></textarea><br>
+    <input type="submit" value="Review toevoegen">
+</form>
+
+
 <a href="index.php">Terug naar overzicht</a>
 
 </body>
